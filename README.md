@@ -10,6 +10,8 @@ MODELOS PREDITIVOS PARA SUPORTE À TOMADA DE DECISÃO
 
 ## NB00 Warm-up (Colab)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ian-iania/IBMEC-BV-Modelos-Preditivos/blob/main/notebooks/NB00_WarmUp_Colab_Python_BV.ipynb)
+
 Objetivo do NB00: primeiro contato com notebook e DataFrame, sem graficos.
 
 Fluxo recomendado em aula:
