@@ -1,5 +1,7 @@
 # IBMEC-BV-Modelos-Preditivos
 MODELOS PREDITIVOS PARA SUPORTE À TOMADA DE DECISÃO
+ 
+![Logo BV IBMEC](logo-bv-ibmec-notebooks.png)
 
 ## Estrutura
 
