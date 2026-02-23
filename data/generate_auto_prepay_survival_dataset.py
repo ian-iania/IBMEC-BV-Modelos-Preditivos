@@ -99,6 +99,10 @@ def build_dataset(seed: int = SEED, n_rows: int = N_ROWS) -> pd.DataFrame:
         + rng.normal(0.0, 0.0018, size=n_rows)
     )
     df["taxa_mensal_contrato"] = np.clip(taxa, 0.008, 0.055)
+    df["rate_spread_m"] = df["taxa_mensal_contrato"].to_numpy() - (df["selic_at_orig"].to_numpy() / 100.0 / 12.0)
+    df["funding_proxy_m"] = (df["selic_at_orig"].to_numpy() / 100.0 / 12.0) * 0.70
+    margem_mensal = df["taxa_mensal_contrato"].to_numpy() - df["funding_proxy_m"].to_numpy()
+    df["margin_monthly_proxy"] = df["loan_amount"].to_numpy() * np.maximum(margem_mensal, 0.002)
 
     term = df["term_meses"].to_numpy(dtype=float)
     loan = df["loan_amount"].to_numpy()
@@ -158,8 +162,11 @@ def build_dataset(seed: int = SEED, n_rows: int = N_ROWS) -> pd.DataFrame:
         "score_interno",
         "canal",
         "taxa_mensal_contrato",
+        "rate_spread_m",
+        "funding_proxy_m",
         "parcela_mensal",
         "pti",
+        "margin_monthly_proxy",
         "T_meses",
         "E_prepay",
     ]
@@ -198,7 +205,18 @@ def main() -> None:
         "- ltv min/média/max: "
         f"{df['ltv'].min():.4f} / {df['ltv'].mean():.4f} / {df['ltv'].max():.4f}"
     )
-    print(f"- selic_at_orig min/max: {df['selic_at_orig'].min():.4f} / {df['selic_at_orig'].max():.4f}")
+    print(
+        "- selic_at_orig min/média/max: "
+        f"{df['selic_at_orig'].min():.4f} / {df['selic_at_orig'].mean():.4f} / {df['selic_at_orig'].max():.4f}"
+    )
+    print(
+        "- rate_spread_m min/média/max: "
+        f"{df['rate_spread_m'].min():.6f} / {df['rate_spread_m'].mean():.6f} / {df['rate_spread_m'].max():.6f}"
+    )
+    print(
+        "- margin_monthly_proxy min/média/max: "
+        f"{df['margin_monthly_proxy'].min():.2f} / {df['margin_monthly_proxy'].mean():.2f} / {df['margin_monthly_proxy'].max():.2f}"
+    )
     print("- head(3):")
     print(df.head(3))
 
