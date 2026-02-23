@@ -110,16 +110,20 @@ def build_regressao_nonlinear(seed: int = 43) -> pd.DataFrame:
     ltv = df["ltv_medio"].to_numpy()
     mix = df["mix_auto"].to_numpy()
 
-    # Smooth nonlinearity: stronger penalty as selic rises above 11.
-    selic_excesso = np.maximum(selic - 11.0, 0.0)
-    penal_selic = 1.7 * (selic_excesso**1.6)
+    # Smooth nonlinearity starts earlier to be visible in this selic range.
+    selic_excesso = np.maximum(selic - 9.6, 0.0)
+    penal_selic = 2.8 * (selic_excesso**1.7)
 
-    # Threshold penalty when both conditions are high.
-    limiar = (selic > 12.0) & (ltv > 78.0)
-    penal_limiar = np.where(limiar, 11.0 + 1.15 * (selic - 12.0) + 0.75 * (ltv - 78.0), 0.0)
+    # Regime shift calibrated to happen in ~10-25% of months.
+    limiar = selic > 9.5
+    penal_limiar = np.where(
+        limiar,
+        13.0 + 2.0 * ((selic - 9.5) ** 2) + 0.85 * np.maximum(ltv - 77.5, 0.0),
+        0.0,
+    )
 
-    # Interaction: positive mix_auto effect gets weaker when selic is high.
-    penal_interacao = np.maximum(selic - 10.5, 0.0) * (mix - 0.40) * 14.0
+    # Interaction: high selic weakens the positive effect of mix_auto.
+    penal_interacao = np.maximum(selic - 9.8, 0.0) * (mix - 0.40) * 18.0
 
     ruido_extra = rng.normal(0, 5.1, size=len(df))
 
